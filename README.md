@@ -7,8 +7,9 @@
 
 ## 项目依赖
 1. 安装sqlite的dll和tools包，并且解压到一个目录下面（配置环境变量）
-2. 安装gcc环境并且配置cgo：$env:CGO_ENABLED="1"
-3. 
+2. 依赖不用管，建议直接go mod tidy
+3. 安装gcc环境并且配置cgo：$env:CGO_ENABLED="1"
+4. 
 
 ## 存在问题及解决方法
 

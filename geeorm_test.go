@@ -1,4 +1,4 @@
-package geeorm
+package GormMaking
 
 import (
 	_ "github.com/mattn/go-sqlite3"

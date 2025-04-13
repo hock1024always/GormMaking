@@ -2,33 +2,48 @@ package session
 
 import (
 	"database/sql"
+	"github.com/hock1024always/GormMaking/dialect"
 	"github.com/hock1024always/GormMaking/log"
+	"github.com/hock1024always/GormMaking/schema"
 	"strings"
 )
 
-// 下面是核心组件Session，负责与数据库的交互
-
+/*下面是核心组件Session，负责与数据库的交互*/
 // 创建的这个组件 实现了对数据库的连接、参数记录、语句拼接 以实现数据库的操作
+//type Session struct {
+//	db      *sql.DB         // 创建的数据库连接
+//	sql     strings.Builder // 拼接sql语句字符串
+//	sqlVars []interface{}   // sqlVars 是一个可变数组，用于存储 sql 语句中的参数
+//}
 type Session struct {
-	db      *sql.DB         // 创建的数据库连接
-	sql     strings.Builder //拼接字符串
-	sqlVars []interface{}   // sqlVars 是一个可变数组，用于存储 sql 语句中的参数
+	db       *sql.DB
+	dialect  dialect.Dialect
+	refTable *schema.Schema
+	sql      strings.Builder
+	sqlVars  []interface{}
 }
 
+/*下面是Session的基础方法*/
 // 创建Session对象
-func New(db *sql.DB) *Session {
-	return &Session{db: db}
+//func New(db *sql.DB) *Session {
+//	return &Session{db: db}
+//}
+func New(db *sql.DB, dialect dialect.Dialect) *Session {
+	return &Session{
+		db:      db,
+		dialect: dialect,
+	}
 }
 
-// 重启 清除Session中的sql和sqlVars
+// 建立数据库连接
+func (s *Session) DB() *sql.DB {
+	return s.db
+}
+
+// 清除Session中的sql和sqlVars 以便复用
 func (s *Session) Clear() {
 	s.sql.Reset()   // 重置sql
 	s.sqlVars = nil // 将sqlVars置为nil
-}
-
-// 返回数据库连接
-func (s *Session) DB() *sql.DB {
-	return s.db
 }
 
 // Raw方法用于向Session中添加原始的SQL语句和参数
@@ -43,6 +58,7 @@ func (s *Session) Raw(sql string, values ...interface{}) *Session {
 	return s
 }
 
+/*下面是封装的三个原生方法*/
 // Exec函数用于执行SQL语句，并返回执行结果和错误信息
 func (s *Session) Exec() (result sql.Result, err error) {
 	// 在函数结束时调用Clear函数，清除Session中的数据

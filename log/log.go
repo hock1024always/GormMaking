@@ -21,10 +21,14 @@ var (
 
 // 日志实例
 var (
-	Error  = errorLog.Println
+	// Error 使用 errorLog 记录错误信息
+	Error = errorLog.Println
+	// Errorf 使用 errorLog 记录格式化的错误信息
 	Errorf = errorLog.Printf
-	Info   = infoLog.Println
-	Infof  = infoLog.Printf
+	// Info 使用 infoLog 记录普通信息
+	Info = infoLog.Println
+	// Infof 使用 infoLog 记录格式化的普通信息
+	Infof = infoLog.Printf
 )
 
 // 三个日志层级
@@ -37,7 +41,7 @@ const (
 // SetLevel controls log level
 // 设置日志级别
 func SetLevel(level int) {
-	//TODO 读写锁 确保日志书写的唯一性？
+
 	mu.Lock()
 	defer mu.Unlock()
 

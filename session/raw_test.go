@@ -5,10 +5,15 @@ import (
 	"os"
 	"testing"
 
+	"github.com/hock1024always/GormMaking/dialect"
+
 	_ "github.com/mattn/go-sqlite3"
 )
 
-var TestDB *sql.DB
+var (
+	TestDB      *sql.DB
+	TestDial, _ = dialect.GetDialect("sqlite3")
+)
 
 func TestMain(m *testing.M) {
 	TestDB, _ = sql.Open("sqlite3", "../gee.db")
@@ -18,7 +23,7 @@ func TestMain(m *testing.M) {
 }
 
 func NewSession() *Session {
-	return New(TestDB)
+	return New(TestDB, TestDial)
 }
 
 func TestSession_Exec(t *testing.T) {

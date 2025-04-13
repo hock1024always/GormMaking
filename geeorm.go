@@ -1,44 +1,65 @@
-package geeorm
+package GormMaking
 
 import (
 	"database/sql"
+	"github.com/hock1024always/GormMaking/dialect"
 
 	"github.com/hock1024always/GormMaking/log"
 	"github.com/hock1024always/GormMaking/session"
 )
 
-// Engine is the main struct of geeorm, manages all db sessions and transactions.
+// Engine
+//
+//	type Engine struct {
+//		db *sql.DB
+//	}
 type Engine struct {
-	db *sql.DB
+	db      *sql.DB
+	dialect dialect.Dialect
 }
 
-// NewEngine create a instance of Engine
-// connect database and ping it to test whether it's alive
+// NewEngine 函数用于创建一个新的数据库引擎
 func NewEngine(driver, source string) (e *Engine, err error) {
+	// 使用给定的驱动和源打开数据库连接
 	db, err := sql.Open(driver, source)
 	if err != nil {
+		// 如果打开数据库连接失败，记录错误并返回
 		log.Error(err)
 		return
 	}
-	// Send a ping to make sure the database connection is alive.
-	if err = db.Ping(); err != nil {
-		log.Error(err)
+	// 测试和数据库的连接是否存在
+	//if err = db.Ping(); err != nil {
+	//	//log.Error(err)
+	//	log.Errorf("dialect %s Not Found", driver)
+	//	return
+	//}
+	dial, ok := dialect.GetDialect(driver) //根据驱动获取数据库方言
+	if !ok {
+		log.Errorf("dialect %s Not Found", driver)
 		return
 	}
-	e = &Engine{db: db}
-	log.Info("Connect database success")
+	//e = &Engine{db: db}
+	e = &Engine{db: db, dialect: dial} //数据库连接成功，返回Engine对象
+	log.Info("成功连接数据库")
 	return
 }
 
-// Close database connection
+// 关闭数据库的连接
+// 关闭数据库连接
 func (engine *Engine) Close() {
+	// 关闭数据库连接
 	if err := engine.db.Close(); err != nil {
-		log.Error("Failed to close database")
+		log.Error("关闭数据库连接失败")
 	}
-	log.Info("Close database success")
+	log.Info("关闭数据库连接成功")
 }
 
-// NewSession creates a new session for next operations
+// // NewSession 方法用于创建一个新的 session
+// func (engine *Engine) NewSession() *session.Session {
+//
+//		// 返回一个新的 session，使用 engine 的 db
+//		return session.New(engine.db)
+//	}
 func (engine *Engine) NewSession() *session.Session {
-	return session.New(engine.db)
+	return session.New(engine.db, engine.dialect)
 }

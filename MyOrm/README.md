@@ -63,3 +63,8 @@
 1. NewEngine 创建 Engine 实例时，获取 driver 对应的 dialect。
 2. NewSession 创建 Session 实例时，传递 dialect 给构造函数 New。
 
+# Day3
+1. 实现新增(insert)记录的功能。
+2. 使用反射(reflect)将数据库的记录转换为对应的结构体实例，实现查询(select)功能。
+
+## 实现查询功能
